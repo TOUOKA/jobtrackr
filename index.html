@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>JobTrackr</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "★あなたのAPIキー",
+      authDomain: "★authDomain",
+      projectId: "★projectId",
+      storageBucket: "★storageBucket",
+      messagingSenderId: "★senderId",
+      appId: "★appId"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+</head>
+<body>
+  <h1>JobTrackr</h1>
+  <button id="loginBtn">Log in with Google</button>
+  <button onclick="addJob()">Add Job</button>
+  <div id="job-list"></div>
+  <script src="script.js"></script>
+</body>
+</html>
