@@ -4,6 +4,13 @@ const db = firebase.firestore();
 let jobs = [];
 let currentUser = null;
 
+const STATUS_LIST = [
+    { key: "entry_consideration", label: "エントリー検討" },
+    { key: "casual_chat", label: "カジュアル面談" },
+    { key: "selection", label: "選考中" },
+    { key: "offer_meeting", label: "オファー面談" }
+  ];
+
 document.getElementById("loginBtn").addEventListener("click", () => {
   auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
     .then(result => {
@@ -12,6 +19,8 @@ document.getElementById("loginBtn").addEventListener("click", () => {
       loadJobs();
     });
 });
+
+document.getElementById("addBtn").addEventListener("click", addJob);
 
 function addJob() {
     const title = prompt("求人タイトルを入力してください");
@@ -22,10 +31,20 @@ function addJob() {
   
     const url = prompt("求人のURLを入力してください（例：https://...）");
     if (!url) return;
+
+    const entryDate = prompt("エントリー日を入力してください（例：2025-06-19）");
+    if (!entryDate) return;
   
-    const job = { title, company, url, status: "気になる" };
+    const job = {
+      title,
+      company,
+      url,
+      entryDate,
+      status: "entry_consideration" // ← ここを修正！
+    };
+    
     jobs.push(job);
-    renderJobs();
+  　renderJobs();
   
     if (currentUser) {
       db.collection("users").doc(currentUser.uid).set({ jobs });
@@ -42,21 +61,29 @@ function loadJobs() {
 }
 
 function renderJobs() {
-    const list = document.getElementById("job-list");
-    list.innerHTML = "";
+    const board = document.getElementById("board");
+    board.innerHTML = "";
   
-    jobs.forEach(job => {
-      const div = document.createElement("div");
-      div.className = "bg-white p-4 mb-4 rounded-lg shadow-md";
+    STATUS_LIST.forEach(status => {
+      const column = document.createElement("div");
+      column.className = "w-64 bg-white p-3 rounded shadow";
+      column.innerHTML = `<h3 class="font-bold mb-3">${status.label}</h3>`;
   
-      div.innerHTML = `
-        <h2 class="text-lg font-semibold">${job.title}</h2>
-        <p class="text-sm text-gray-600">${job.company}</p>
-        <a href="${job.url}" target="_blank" class="text-blue-600 underline text-sm">求人を見る</a>
-        <p class="text-xs text-gray-400 mt-1">${job.status}</p>
-      `;
+      const columnJobs = jobs.filter(job => job.status === status.key);
+      columnJobs.forEach(job => {
+        const card = document.createElement("div");
+        card.className = "bg-gray-100 p-3 mb-2 rounded";
+        card.innerHTML = `
+          <p class="font-semibold">${job.title}</p>
+          <p class="text-sm text-gray-600">${job.company}</p>
+          <a href="${job.url}" class="text-blue-500 underline text-sm" target="_blank">求人を見る</a>
+          ${job.entryDate ? `<p class="text-xs text-gray-500 mt-1">エントリー日：${job.entryDate}</p>` : ""}
+          <p class="text-xs text-gray-400 mt-1">${status.label}</p>
+        `;
+        column.appendChild(card);
+      });
   
-      list.appendChild(div);
+      board.appendChild(column);
     });
   }
   
