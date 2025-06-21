@@ -87,4 +87,18 @@ function renderJobs() {
     });
   }
   
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      currentUser = user;
+      document.getElementById("username").textContent = user.displayName;
+      document.getElementById("logoutBtn").classList.remove("hidden");
+      loadJobs();
+    }
+  });
+  
+  function logout() {
+    auth.signOut().then(() => {
+      location.reload();
+    });
+  }
   
