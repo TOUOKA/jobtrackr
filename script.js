@@ -66,6 +66,8 @@ function renderJobs() {
   
     STATUS_LIST.forEach(status => {
       const column = document.createElement("div");
+      column.id = `col-${status.key}`; // 20250620追加！
+      column.setAttribute("data-status", status.key); // 20250620追加
       column.className = "w-64 bg-white p-3 rounded shadow";
       column.innerHTML = `<h3 class="font-bold mb-3">${status.label}</h3>`;
   
@@ -85,6 +87,7 @@ function renderJobs() {
   
       board.appendChild(column);
     });
+    enableDragAndDrop(); // ← 最後に追加（renderJobsの末尾でOK）
   }
   
   auth.onAuthStateChanged(user => {
@@ -99,6 +102,29 @@ function renderJobs() {
   function logout() {
     auth.signOut().then(() => {
       location.reload();
+    });
+  }
+  //20250615 看板移動
+  function enableDragAndDrop() {
+    STATUS_LIST.forEach(status => {
+      const column = document.getElementById(`col-${status.key}`);
+      new Sortable(column, {
+        group: 'jobs',
+        animation: 150,
+        onEnd: (evt) => {
+          const item = evt.item;
+          const newStatus = evt.to.getAttribute('data-status');
+          const title = item.getAttribute('data-title');
+          const job = jobs.find(j => j.title === title);
+          if (job) {
+            job.status = newStatus;
+            renderJobs();
+            if (currentUser) {
+              db.collection("users").doc(currentUser.uid).set({ jobs });
+            }
+          }
+        }
+      });
     });
   }
   
