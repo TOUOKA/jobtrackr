@@ -56,6 +56,7 @@ function loadJobs() {
     if (doc.exists) {
       jobs = doc.data().jobs || [];
       renderJobs();
+      updateDashboard();  
     }
   });
 }
@@ -127,4 +128,19 @@ function renderJobs() {
       });
     });
   }
+
+  // 20250620_updateDashboard() 関数の追加
+  function updateDashboard() {
+    const dashboard = document.getElementById("dashboard");
+    if (!dashboard) return;  // カンバンページでは無効化
+  
+    let html = "<h2 class='font-semibold text-lg mb-2'>📊 あなたの応募状況</h2><ul class='list-disc pl-5'>";
+    STATUS_LIST.forEach(st => {
+      const c = jobs.filter(j => j.status === st.key).length;
+      html += `<li>${st.label}：${c} 件</li>`;
+    });
+    html += "</ul>";
+    dashboard.innerHTML = html;
+  }
+  
   
