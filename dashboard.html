@@ -11,13 +11,19 @@
 </head>
 <body class="bg-gray-100 min-h-screen text-gray-800">
   <!-- ヘッダー（共通化推奨） -->
-  <header class="bg-white shadow-md px-6 py-4 flex justify-between items-center">
-    <h1 class="text-2xl font-bold text-indigo-600">dashboard</h1>
-    <button onclick="location.href='index.html'" class="bg-blue-500 text-white px-3 py-1 rounded">カンバンへ戻る</button>
+  <header class="fixed top-0 left-0 w-full bg-white shadow-md px-6 py-4 flex justify-between items-center z-10">
+    <h1 class="text-2xl font-bold text-indigo-600">DashBoard</h1>
+    <div class="flex items-center space-x-4">
+      <span id="username" class="text-sm text-gray-600"></span>
+      <button onclick="location.href='index.html'" class="bg-blue-500 text-white text-sm px-3 py-1 rounded">
+        カンバンへ戻る
+      </button>
+    </div>
   </header>
 
   <!-- 進捗サマリーエリア -->
-  <main class="max-w-4xl mx-auto p-6">
+　<!-- ヘッダーに余白追加：修正後（mt-[100px] を追加） -->
+  <main class="max-w-4xl mx-auto p-6 mt-[100px]">
     <div id="dashboard" class="bg-white p-4 rounded shadow-md text-sm"></div>
   </main>
 

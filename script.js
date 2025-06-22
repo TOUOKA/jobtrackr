@@ -34,12 +34,15 @@ function addJob() {
 
     const entryDate = prompt("エントリー日を入力してください（例：2025-06-19）");
     if (!entryDate) return;
+
+    const source = prompt("応募経路を入力してください（例：エージェント、ビズリーチ、リファラルなど）");
   
     const job = {
       title,
       company,
       url,
       entryDate,
+      source, //応募経路選択
       status: "entry_consideration" // ← ここを修正！
     };
     
@@ -69,18 +72,20 @@ function renderJobs() {
       const column = document.createElement("div");
       column.id = `col-${status.key}`; // 20250620追加！
       column.setAttribute("data-status", status.key); // 20250620追加
-      column.className = "w-64 bg-white p-3 rounded shadow";
-      column.innerHTML = `<h3 class="font-bold mb-3">${status.label}</h3>`;
+      column.className = "bg-gray-50 p-4 rounded-xl border border-gray-200 shadow min-h-[200px]";
+      column.innerHTML = `<h3 class="font-bold mb-3 text-indigo-700 text-center">${status.label}</h3>`;
   
       const columnJobs = jobs.filter(job => job.status === status.key);
       columnJobs.forEach(job => {
         const card = document.createElement("div");
-        card.className = "bg-gray-100 p-3 mb-2 rounded";
+        card.className = "bg-white p-4 mb-4 rounded-xl shadow hover:shadow-lg transition";
+
         card.innerHTML = `
           <p class="font-semibold">${job.title}</p>
           <p class="text-sm text-gray-600">${job.company}</p>
           <a href="${job.url}" class="text-blue-500 underline text-sm" target="_blank">求人を見る</a>
           ${job.entryDate ? `<p class="text-xs text-gray-500 mt-1">エントリー日：${job.entryDate}</p>` : ""}
+          ${job.source ? `<p class="text-xs text-gray-500 mt-1">応募経路：${job.source}</p>` : ""}
           <p class="text-xs text-gray-400 mt-1">${status.label}</p>
         `;
         column.appendChild(card);
@@ -141,6 +146,41 @@ function renderJobs() {
     });
     html += "</ul>";
     dashboard.innerHTML = html;
+  }
+  function showJobForm() {
+    document.getElementById("jobForm").classList.remove("hidden");
+  }
+  
+  function submitJob() {
+    const title = document.getElementById("jobTitleInput").value;
+    const url = document.getElementById("jobUrlInput").value;
+    const entryDate = document.getElementById("entryDateInput").value;
+  
+    if (!title || !url || !entryDate) {
+      alert("すべての項目を入力してください");
+      return;
+    }
+  
+    const job = {
+      title,
+      company: "", // 今回は会社名省略
+      url,
+      entryDate,
+      status: "entry_consideration"
+    };
+  
+    jobs.push(job);
+    renderJobs();
+  
+    if (currentUser) {
+      db.collection("users").doc(currentUser.uid).set({ jobs });
+    }
+  
+    // フォームを隠してリセット
+    document.getElementById("jobForm").classList.add("hidden");
+    document.getElementById("jobTitleInput").value = "";
+    document.getElementById("jobUrlInput").value = "";
+    document.getElementById("entryDateInput").value = "";
   }
   
   
